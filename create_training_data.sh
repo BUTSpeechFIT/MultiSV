@@ -55,8 +55,14 @@ function download_and_extract {
         tar --skip-old-files -zxf $storage_dir/$file_name -C $out_dir
         ret_val=$?
     elif [[ $extract_method == "7za" ]]; then
-        7za x -o$out_dir $storage_dir/$file_name -aos
-        ret_val=$?
+        if command -v 7za &> /dev/null; then
+            7za x -o$out_dir $storage_dir/$file_name -aos
+            ret_val=$?
+        else
+            # fall back to simple python decompression (only for zip files)
+            ./scripts/simple_unzip.py $storage_dir/$file_name -d $out_dir # standard zip sometimes fails to extract FMA
+            ret_val=$?
+        fi
     else
         echo "WARNING: Unknown type of an extraction method. Skipping extraction."
         return
