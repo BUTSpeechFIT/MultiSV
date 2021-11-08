@@ -5,6 +5,11 @@
 storage_dir=$STORAGE_DIR
 mkdir -p $storage_dir
 
+if [[ -z $VOICES_DIR ]]; then
+    echo "VOiCES directory not provided. Please use the option '-e' or '--voices-dir' to specify it."
+    exit 1
+fi
+
 function download_and_extract {
     # params: urls, checksum_file, out_dir, extraction method, compressed file name, post-download proc.
     local urls=$1
@@ -78,40 +83,11 @@ function download_and_extract {
 
 #------------------------------------------------------------------------------#
 
-tgt_vox_dir=$storage_dir/voxceleb2
-tgt_noise_dir=$storage_dir/noises_training
-tgt_rir_dir=$storage_dir/rirs_training
-mkdir -p $tgt_vox_dir
+tgt_noise_dir=$storage_dir/noises_dev_eval
+tgt_rir_dir=$storage_dir/rirs_dev_eval
+
 mkdir -p $tgt_noise_dir
 mkdir -p $tgt_rir_dir
-
-# Voxceleb 2 dev
-if [[ -z $VOX2_DIR ]]; then
-    printf "\nACQUIRING VOXCELEB 2 DEV\n"
-    printf   "========================\n"
-    download_and_extract "https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partaa
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partab
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partac
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partad
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partae
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partaf
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partag
-    https://thor.robots.ox.ac.uk/~vgg/data/voxceleb/vox1a/vox2_dev_aac_partah" \
-    `pwd`/checksums/vox_md5.txt $tgt_vox_dir "zip" vox2_dev_aac.zip \
-    "test -f $storage_dir/vox2_dev_aac.zip || cat $storage_dir/vox2_dev_aac* > $storage_dir/vox2_dev_aac.zip"
-else
-    test -e $tgt_vox_dir/dev || ln -s `realpath $VOX2_DIR`/dev $tgt_vox_dir 
-fi
-
-# FMA small
-if [[ -z $FMA_DIR ]]; then
-    printf "\nACQUIRING FMA SMALL\n"
-    printf   "===================\n"
-    download_and_extract "https://os.unil.cloud.switch.ch/fma/fma_small.zip" \
-    `pwd`/checksums/fma_small_md5.txt $tgt_noise_dir "7za" fma_small.zip
-else
-    test -e $tgt_noise_dir/fma_small || ln -s `realpath $FMA_DIR`/fma_small $tgt_noise_dir
-fi
 
 # MUSAN
 if [[ -z $MUSAN_DIR ]]; then
@@ -127,8 +103,8 @@ fi
 if [[ -z $FREESOUND_BUT_DIR ]]; then
     printf "\nACQUIRING FREESOUND AND BUT NOISES\n"
     printf   "==================================\n"
-    download_and_extract "https://www.fit.vutbr.cz/~imosner/MultiSV/noises_freesound_BUT_training.zip" \
-    `pwd`/checksums/multisv_noises_freesound_BUT_training_md5.txt $tgt_noise_dir "zip" noises_freesound_BUT_training.zip
+    download_and_extract "https://www.fit.vutbr.cz/~imosner/MultiSV/noises_freesound_BUT_dev_eval.zip" \
+    `pwd`/checksums/multisv_noises_freesound_BUT_dev_eval_md5.txt $tgt_noise_dir "zip" noises_freesound_BUT_dev_eval.zip
 else
     test -e $tgt_noise_dir/freesound || ln -s `realpath $FREESOUND_BUT_DIR`/freesound $tgt_noise_dir
     test -e $tgt_noise_dir/BUT       || ln -s `realpath $FREESOUND_BUT_DIR`/BUT $tgt_noise_dir
@@ -138,15 +114,13 @@ fi
 if [[ -z $RIR_DIR ]]; then
     printf "\nACQUIRING RIRs\n"
     printf   "==============\n"
-    download_and_extract "https://www.fit.vutbr.cz/~imosner/MultiSV/rirs_training.zip" \
-    `pwd`/checksums/multisv_rirs_training_md5.txt $tgt_rir_dir "zip" rirs_training.zip
+    download_and_extract "https://www.fit.vutbr.cz/~imosner/MultiSV/rirs_dev_eval.zip" \
+    `pwd`/checksums/multisv_rirs_dev_eval_md5.txt $tgt_rir_dir "zip" rirs_dev_eval.zip
 else
-    test -e $tgt_rir_dir/dev || ln -s `realpath $RIR_DIR`/dev $tgt_rir_dir
+    test -e $tgt_rir_dir/VOiCES_Box_unzip || ln -s `realpath $RIR_DIR`/VOiCES_Box_unzip $tgt_rir_dir
 fi
 
 #------------------------------------------------------------------------------#
-
-./scripts/make_wav.sh $tgt_noise_dir/fma_small
 
 # PERFORM SIMULATION
 printf "\nPERFORMING SIMULATION\n"
@@ -154,17 +128,17 @@ printf   "=====================\n"
 
 . scripts/select_python.sh
 $py_interpreter scripts/simulate_data.py \
-    --speech_dir="$tgt_vox_dir" \
+    --speech_dir="$VOICES_DIR" \
     --noise_dir="$tgt_noise_dir" \
     --rir_dir="$tgt_rir_dir" \
-    --csv="training/metadata/MultiSV_train.csv" \
-    --out_dir="$storage_dir/MultiSV/training"
+    --csv="evaluation/metadata/MultiSV_dev.csv" \
+    --out_dir="$storage_dir/MultiSV/dev" \
+    --speech_ext="wav"
 
-if [[ $SIMULATE_CV == "TRUE" ]]; then
-    $py_interpreter scripts/simulate_data.py \
-        --speech_dir="$tgt_vox_dir" \
-        --noise_dir="$tgt_noise_dir" \
-        --rir_dir="$tgt_rir_dir" \
-        --csv="training/metadata/MultiSV_cv.csv" \
-        --out_dir="$storage_dir/MultiSV/training"
-fi
+$py_interpreter scripts/simulate_data.py \
+    --speech_dir="$VOICES_DIR" \
+    --noise_dir="$tgt_noise_dir" \
+    --rir_dir="$tgt_rir_dir" \
+    --csv="evaluation/metadata/MultiSV_eval.csv" \
+    --out_dir="$storage_dir/MultiSV/eval" \
+    --speech_ext="wav"
