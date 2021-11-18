@@ -65,3 +65,15 @@ STORAGE_DIR
 ```
 
 It is recommended to reuse the MUSAN dataset from the training data simulation phase to save space. We also note that Freesound.org and BUT noises (argument `-s`) and room impulse responses (argument `-r`) are different from those used in training data. Therefore, it is not possible to reuse files downloaded by the `create_training_data.sh` script.
+
+## Citation
+```
+@misc{multisv2021,
+      title={MultiSV: Dataset for Far-Field Multi-Channel Speaker Verification}, 
+      author={Ladislav Mošner and Oldřich Plchot and Lukáš Burget and Jan Černocký},
+      year={2021},
+      eprint={2111.06458},
+      archivePrefix={arXiv},
+      primaryClass={eess.AS}
+}
+```
