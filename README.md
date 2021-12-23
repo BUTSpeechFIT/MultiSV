@@ -1,5 +1,18 @@
-# MultiSV: datasets for multichannel speaker verification experiments
-The recipe is being prepared.
+# MultiSV: dataset for far-field multi-channel speaker verification
+MultiSV is a corpus designed for training and evaluating text-independent multi-channel speaker verification systems. The training multi-channel data is prepared by simulation on top of clean parts of the Voxceleb dataset. The development and evaluation trials are based on either retransmitted or simulated VOiCES dataset, which we modified to provide multi-channel trials. MultiSV can be used also for experiments with dereverberation, denoising, and speech enhancement.
+
+## Quick start
+```bash
+conda create -n py39_MultiSV python=3.9
+conda activate py39_MultiSV
+pip install -r requirements.txt
+# TRAINING DATA:
+./create_training_data.sh $STORAGE_DIR
+# SIMULATED DEVELOPMENT AND EVALUATION DATA:
+./create_dev_eval_data.sh --musan-dir $STORAGE_DIR/noises_training --voices-dir $VOICES_DIR $STORAGE_DIR
+```
+Detailed information about simulation scripts is provided later.
+> **Note:** Please note that recordings are processed sequentially during simulation. Parallelization (and hence speedup) can be achieved by splitting CSV files (such as `training/metadata/MultiSV_train.csv`) defining simulation parameters. We will consider native parallelization in the future.
 
 ## Usage
 ### Retransmitted development and evaluation data download
