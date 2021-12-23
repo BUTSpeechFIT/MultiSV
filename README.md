@@ -79,6 +79,27 @@ STORAGE_DIR
 
 It is recommended to reuse the MUSAN dataset from the training data simulation phase to save space. We also note that Freesound.org and BUT noises (argument `-s`) and room impulse responses (argument `-r`) are different from those used in training data. Therefore, it is not possible to reuse files downloaded by the `create_training_data.sh` script.
 
+## Evaluation
+Trial definitions for the retransmitted VOiCES data evaluation are located in `evaluation/VOiCES_multichan/<condition>` where `<condition>` is one of the following conditions:
+- **CE**: clean enrollment,
+- **SRE**: single-channel retransmitted enrollment,
+- **MRE**: multi-channel retransmitted enrollment,
+- **MRE_hard**.
+
+Detailed information about the conditions is provided in the accompanying paper. Every condition contains the following files: `MultiSV_<type>_<condition>.<ext>`. The `<type>` identifier is one of
+- **dev**: development,
+- **eval_v1**: evaluation version 1,
+- **eval_v2**: evaluation version 2.
+
+Information about the types is also detailed in our paper. The <ext> identifier stands for a specific file extension:
+- **txt**: trial definition where lines are in the form of `<enroll> <test> tgt|imp`, where `tgt` means "target" and `imp` "impostor" or "non-target" trial.
+- **enroll.scp**: maps `<enroll>` names to `<logical>` names (`<enroll>=<logical>`). Logical name is for example a name of a microphone array.
+- **test.scp**: analogical to enroll.scp
+- **enroll.chmap.scp**: maps `<logical>` names to actual names of files (`<logical>=<physical>`), where `<physical>` is either one file or mutliple files separated by space.
+- **test.chmap.scp**: analogical to enroll.chmap.scp
+
+The `evaluation/VOiCES_multichan/SRE` condition is used for the simulated data evaluation. It is enough to replace the original VOiCES recordings with those produced by `create_dev_eval_data.sh`. The simulated recordings have the same names as the original ones. We note that the counterparts with the same names share the same speech content, but noise and reverberation are different. Therefore, the distractor identifier in the name may not correspond to the actual noise in the simulated recordings.
+
 ## Citation
 ```
 @misc{multisv2021,
