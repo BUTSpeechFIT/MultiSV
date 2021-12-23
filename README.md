@@ -11,14 +11,14 @@ pip install -r requirements.txt
 # SIMULATED DEVELOPMENT AND EVALUATION DATA:
 ./create_dev_eval_data.sh --musan-dir $STORAGE_DIR/noises_training --voices-dir $VOICES_DIR $STORAGE_DIR
 ```
-Detailed information about simulation scripts is provided later.
+The resulting data can be found in `$STORAGE_DIR/MultiSV` after simulation. Detailed information about simulation scripts is provided later.
 > **Note:** Please note that recordings are processed sequentially during simulation. Parallelization (and hence speedup) can be achieved by splitting CSV files (such as `training/metadata/MultiSV_train.csv`) defining simulation parameters. We will consider native parallelization in the future.
 
 ## Usage
 ### Retransmitted development and evaluation data download
 Single and/or multi-channel segments of verification trial pairs are based on the VOiCES dataset. In order to perform an evaluation based on prepared trial lists, it is required to download the VOiCES data first. Please follow instructions at the official [webpage](https://iqtlabs.github.io/voices/downloads/) and download `VOiCES_release.tar.gz`.
 
-Note: we did not automate the download as the corpus is available on AWS which requires AWS Command Line Interface (CLI).
+> **Note:** we did not automate the download as the corpus is available on AWS which requires AWS Command Line Interface (CLI).
 
 ### Training data simulation
 If your python installation satisfies the requirements defined in `requirements.txt`, the easiest way to generate simulated training data completely from scratch is by running:
