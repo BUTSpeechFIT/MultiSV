@@ -102,12 +102,13 @@ The `evaluation/VOiCES_multichan/SRE` condition is used for the simulated data e
 
 ## Citation
 ```
-@misc{multisv2021,
-      title={MultiSV: Dataset for Far-Field Multi-Channel Speaker Verification}, 
-      author={Ladislav Mošner and Oldřich Plchot and Lukáš Burget and Jan Černocký},
-      year={2021},
-      eprint={2111.06458},
-      archivePrefix={arXiv},
-      primaryClass={eess.AS}
-}
+@INPROCEEDINGS{multisv2021,
+  title={MultiSV: Dataset for Far-Field Multi-Channel Speaker Verification}, 
+  author={Mošner, Ladislav and Plchot, Oldřich and Burget, Lukáš and Černocký, Jan Honza},
+  booktitle={ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+  year={2022},
+  pages={7977-7981},
+  doi={10.1109/ICASSP43922.2022.9746833}}
 ```
+## Acknowledgement
+The project was supported by Tencent AI Lab Rhino-Bird Focused Research Program in 2023 and 2024
